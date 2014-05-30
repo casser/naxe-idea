@@ -1,0 +1,50 @@
+<idea-plugin version="2">
+  <id>org.carracoo.naxe.idea</id>
+  <name>NAXE</name>
+  <version>1.2</version>
+  <vendor email="sergey.mamyan@gmail.com" url="http://naxe.carracoo.org">Carracoo</vendor>
+
+  <description><![CDATA[
+      Enter short description for your plugin here.<br>
+      <small>most HTML tags may be used</small>
+      ]]></description>
+
+  <change-notes><![CDATA[
+      Add change notes here.<br>
+      <small>most HTML tags may be used</small>
+      ]]>
+  </change-notes>
+
+  <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+  <idea-version since-build="107.105"/>
+
+  <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+  <application-components>
+    <!-- Add your application components here -->
+  </application-components>
+
+  <project-components>
+    <!-- Add your project components here -->
+  </project-components>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+      <sdkType id="NaxeSdk" implementation="org.carracoo.naxe.idea.module.NaxeSdkType"/>
+      <moduleType id="NaxeModule" implementationClass="org.carracoo.naxe.idea.module.NaxeModuleType"/>
+      <fileTypeFactory id="NaxeTypeFactory" implementation="org.carracoo.naxe.idea.lang.NaxeFileTypeFactory"/>
+      <lang.syntaxHighlighterFactory key="NAXE" implementationClass="org.carracoo.naxe.idea.syntax.NaxeSyntaxHighlighterFactory"/>
+      <colorSettingsPage implementation="org.carracoo.naxe.idea.syntax.NaxeSyntaxHighlighterSettings"/>
+      <lang.parserDefinition language="NAXE" implementationClass="org.carracoo.naxe.idea.lang.NaxeParserDefinition"/>
+      <lang.psiStructureViewFactory language="NAXE" implementationClass="org.carracoo.naxe.idea.structure.NaxeStructureViewFactory"/>
+      <lang.braceMatcher language="NAXE" implementationClass="org.carracoo.naxe.idea.structure.NaxeBraceMatcher"/>
+      <lang.foldingBuilder language="NAXE" implementationClass="org.carracoo.naxe.idea.structure.NaxeFoldingBuilder"/>
+      <completion.contributor language="NAXE" implementationClass="org.carracoo.naxe.idea.completion.NaxeKeywordCompletionContributor"/>
+  </extensions>
+</idea-plugin>

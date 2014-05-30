@@ -1,0 +1,305 @@
+{
+
+    parserClass     ="org.carracoo.naxe.idea.lang.parser.NaxeParser"
+    parserUtilClass ="com.intellij.lang.parser.GeneratedParserUtilBase"
+    parserImports   ="static org.carracoo.naxe.idea.lang.NaxeToken.*"
+
+    implements  ="org.carracoo.naxe.idea.lang.psi.NaxePsiElement"
+    extends     ="org.carracoo.naxe.idea.lang.psi.NaxePsiElementImpl"
+
+
+
+    elementTypeHolderClass  ="org.carracoo.naxe.idea.lang.lexer.NaxeElements"
+    elementTypeClass        ="org.carracoo.naxe.idea.lang.NaxeToken"
+    tokenTypeClass          ="org.carracoo.naxe.idea.lang.NaxeToken"
+
+    psiPackage      = "org.carracoo.naxe.idea.lang.psi"
+    psiImplPackage  = "org.carracoo.naxe.idea.lang.psi"
+
+    psiClassPrefix      ="Naxe"
+    psiImplClassSuffix  ="Impl"
+
+    generateTokens      = false
+    tokens            = [
+
+        PACKAGE       = "package"
+        USING         = "using"
+        IMPORT        = "import"
+        ENUM          = "enum"
+        CLASS         = "class"
+        FUNCTION      = "function"
+        VARIABLE      = "variable"
+        GETTER        = "getter"
+        SETTER        = "setter"
+        VAR           = "var"
+        ARG           = "arg"
+        IF            = "if"
+        ELSE          = "else"
+        SWITCH        = "switch"
+        CASE          = "case"
+        FOR           = "for"
+        UNTIL         = "until"
+        WHILE         = "while"
+        THROW         = "throw"
+        TRY           = "try"
+        CATCH         = "catch"
+        FINALLY       = "finally"
+        IN            = "in"
+        IS            = "is"
+        AS            = "as"
+        NEW           = "new"
+        STATIC        = "static"
+        BREAK         = "break"
+        CONTINUE      = "continue"
+        RETURN        = "return"
+        SUPER         = "super"
+        THIS          = "this"
+        TRUE          = "true"
+        FALSE         = "false"
+        NULL          = "null"
+        VOID          = "void"
+        HIDDEN        = "@hidden"
+        STATIC        = "@static"
+        NATIVE        = "@native"
+
+
+        SEM      = ";"
+        COM      = ","
+        COL      = ":"
+        NS       = "::"
+        PAR      = "..."
+        TO       = ".."
+        DOT      = "."
+        QM       = "?"
+        AT       = "@"
+        ASG      = "="
+        EQ       = "=="
+        NEQ      = "!="
+        INC      = "++"
+        DEC      = "--"
+        INF      = "<"
+        SUP      = ">"
+        IEQ      = "<="
+        SEQ      = ">="
+        AND      = "&"
+        OR       = "|"
+        NOT      = "!"
+        NEG      = "~"
+        SUM      = "+"
+        SUB      = "-"
+        MUL      = "*"
+        DIV      = "/"
+        MOD      = "%"
+        LP       = "("
+        RP       = ")"
+        LB       = "{"
+        RB       = "}"
+        LS       = "["
+        RS       = "]"
+
+        QSTRING  ="regexp:\"([^\"\\]|\\\"|\\\'|\\)*\""
+        SSTRING  ="regexp:'([^'\\]|\\.)*')"
+        META     ="regexp:@\w+"
+        INTEGER  ="regexp:\d+"
+        FLOAT    ="regexp:\d+\.\d+"
+        SCOMMENT ="regexp://.*"
+        DCOMMENT ="regexp:/\*\*(.|\n)*\*/"
+        MCOMMENT ="regexp:/\*(.|\n)*\*/"
+        WORD     ="regexp:\w+"
+    ]
+}
+
+naxe ::= package_stm? expression //package_items
+
+identifier          ::= WORD
+metakey             ::= META|HIDDEN|NATIVE|STATIC
+string_lit          ::= QSTRING|SSTRING
+number_lit          ::= FLOAT|INTEGER|LONG|DOUBLE
+boolean_lit         ::= TRUE|FALSE
+null_lit            ::= NULL
+
+
+
+
+private
+package_items       ::= package_item*
+private
+package_item        ::= (import_stm | class_dec | function_dec | variable_dec){
+    pin=1; recoverWhile=package_item_rec
+}
+private package_item_rec    ::= !(metakey|CLASS) {pin=1}
+
+
+component_name      ::= identifier
+component_type      ::= identifier
+
+
+
+package_stm         ::= meta_item* PACKAGE qualifier_exp SEM {pin=2}
+import_stm          ::= meta_item* IMPORT qualifier_exp (AS identifier)? SEM {pin=2}
+
+meta_value          ::= literal                                                                         {pin=1}
+meta_pair           ::= identifier ASG literal                                                          {pin=2}
+private
+meta_entry          ::= meta_value | meta_pair
+meta_item           ::= metakey (LP expressions RP)? {pin=1}
+metadatas           ::= meta_item*
+
+
+class_dec           ::= metadatas CLASS component_name class_parents? class_body {
+    pin=2
+    implements      = "org.carracoo.naxe.idea.lang.psi.NaxePsiClass"
+    mixin           = "org.carracoo.naxe.idea.lang.psi.NaxePsiClassImpl"
+    recoverWhile    = package_item_rec
+}
+class_parents       ::= COL class_parent (COM class_parent)* {pin=1}
+class_parent        ::= reference_exp {pin=1;}
+
+class_body          ::= (SEM | (LB class_item* RB))
+
+class_item          ::= function_dec | variable_dec {recoverWhile=class_item_rec}
+class_item_rec      ::= !(META|VARIABLE|FUNCTION|RB)
+
+function_dec        ::= metadatas FUNCTION (component_name|NEW) COL component_type function_params? (function_body|SEM) {
+    pin             = 2;
+    implements      = "org.carracoo.naxe.idea.lang.psi.NaxePsiFunction"
+    mixin           = "org.carracoo.naxe.idea.lang.psi.NaxePsiFunctionImpl"
+}
+function_params     ::= LP var_pair (COM var_pair)* (COM PAR var_pair)? RP
+function_body       ::= block_stm
+
+variable_dec        ::= metadatas VARIABLE component_name COL component_type variable_value? (variable_accessors | SEM) {
+   pin             = 2;
+   implements      = "org.carracoo.naxe.idea.lang.psi.NaxePsiVariable"
+   mixin           = "org.carracoo.naxe.idea.lang.psi.NaxePsiVariableImpl"
+}
+variable_value      ::= ASG expression
+variable_accessors  ::= LB getter_dec? setter_dec? RB {pin=1;}
+
+getter_dec          ::= metadatas GETTER function_body {pin=2}
+getter_rec          ::= !(META|GETTER)
+setter_dec          ::= metadatas SETTER function_body {pin=2}
+setter_rec          ::= !(META|SETTER)
+
+statement           ::=
+  if_stm            |
+  for_stm           |
+  until_stm         |
+  while_stm         |
+  switch_stm        |
+  try_stm           |
+  var_stm           |
+  arg_stm           |
+  return_stm        |
+  exp_stm           { recoverWhile="statement_rec" }
+
+block_stm           ::= LB statement* RB {pin=1;}
+return_stm          ::= RETURN exp_stm
+var_stm             ::= VAR var_pairs SEM {pin=1;}
+arg_stm             ::= ARG var_pairs SEM {pin=1;}
+var_pairs           ::= var_pair (COM var_pair)* {pin=2;}
+var_pair            ::= component_name COL component_type variable_value?             {pin=2;}
+if_stm              ::= IF LP expression RP block_stm (ELSE (if_stm|block_stm))?      {pin=1}
+for_stm             ::= FOR LP (for_range | for_each) RP block_stm                                {pin=1}
+for_each            ::= identifier (AS identifier)? IN expression                                       {pin=3}
+for_range           ::= identifier IN expression TO expression                                          {pin=4}
+until_stm           ::= UNTIL LP expression RP block_stm                                          {pin=1}
+while_stm           ::= WHILE LP expression RP block_stm                                          {pin=1}
+switch_stm          ::= SWITCH LP expression RP LB switch_case* switch_default? RB                      {pin=1}
+switch_case         ::= CASE LP expression RP block_stm                                          {pin=1}
+switch_default      ::= ELSE block_stm                                                            {pin=1}
+try_stm             ::= TRY block_stm try_catch* try_finally?                                     {pin=1}
+try_catch           ::= CATCH LP component_name COL component_type RP block_stm                   {pin=3}
+try_finally         ::= CATCH block_stm                                                           {pin=2}
+exp_stm             ::= expression SEM                                                                  {pin=1}
+
+
+expressions                     ::= expression (',' expression)*
+private expression              ::= (group_expr | assign_expr){
+    pin=1;
+}
+
+
+group_expr                      ::= LP expression? RP
+
+private assign_expr             ::= ternary_expr assign_exp*
+left assign_exp                 ::= ASG ternary_expr
+
+private ternary_expr            ::= or_expr ternary_exp?
+left ternary_exp                ::= QM expression COL ternary_expr
+
+private or_expr                 ::= and_expr or_exp*
+left or_exp                     ::= OR and_expr
+
+private and_expr                ::= compare_expr and_exp*
+left and_exp                    ::= AND compare_expr
+
+private compare_expr            ::= additive_expr compare_exp*
+private compare_exp             ::=
+    compare_eq_exp              |
+    compare_sup_exp             |
+    compare_inf_exp             |
+    compare_neq_exp             |
+    compare_seq_exp             |
+    compare_ieq_exp             ;
+
+left compare_eq_exp             ::= EQ  additive_expr;
+left compare_sup_exp            ::= SUP additive_expr;
+left compare_inf_exp            ::= INF additive_expr;
+left compare_neq_exp            ::= NEQ additive_expr;
+left compare_seq_exp            ::= SEQ additive_expr;
+left compare_ieq_exp            ::= IEQ additive_expr;
+
+private additive_expr           ::= multiplicative_expr (sum_exp|sub_exp)*
+
+left sum_exp                    ::= SUM multiplicative_expr
+left sub_exp                    ::= SUB multiplicative_expr
+
+private multiplicative_expr     ::= prefix_exp multiplicative_exp*
+left multiplicative_exp         ::= (MUL|DIV|MOD) (prefix_exp | suffix_expr)
+
+private prefix_exp              ::=
+    px_sub_exp |
+    px_not_exp |
+    px_neg_exp |
+    px_inc_exp |
+    px_dec_exp |
+    group_expr |
+    suffix_expr;
+
+private suffix_expr             ::= value suffix_exp* {pin=1}
+private suffix_exp              ::= (sx_inc_exp|sx_dec_exp)
+left sx_inc_exp                 ::= INC;
+left sx_dec_exp                 ::= DEC;
+
+
+private value                   ::=
+    literal_exp |
+    identifier  |
+    access_exp  |
+    object_exp  |
+    array_exp   ;
+
+px_sub_exp                      ::= SUB prefix_exp
+px_not_exp                      ::= NOT prefix_exp
+px_neg_exp                      ::= NEG prefix_exp
+px_inc_exp                      ::= INC prefix_exp
+px_dec_exp                      ::= DEC prefix_exp
+
+array_exp                       ::= LS expressions? RS
+object_exp                      ::= LB object_pair? (COM object_pair)* RB
+object_pair                     ::= identifier COL expression
+
+this_exp                        ::= THIS                                                                            {pin=1}
+super_exp                       ::= SUPER                                                                           {pin=1}
+
+
+left qualifier_exp              ::= DOT identifier
+
+
+private access_exp              ::= (group_expr|identifier) (class_access_exp|new_access_exp|call_access_exp|qualifier_exp)* {pin=1}
+private literal_exp             ::= null_lit | string_lit | number_lit | boolean_lit
+
+left class_access_exp           ::= DOT CLASS  {pin=2;}
+left new_access_exp             ::= DOT NEW (LP expressions? RP)? {pin=2;}
+left call_access_exp            ::= LP expressions? RP {pin=2}

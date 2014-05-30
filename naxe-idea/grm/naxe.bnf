@@ -1,0 +1,346 @@
+{
+
+    parserClass     ="org.carracoo.naxe.idea.lang.parser.NaxeParser"
+    parserUtilClass ="com.intellij.lang.parser.GeneratedParserUtilBase"
+    parserImports   ="static org.carracoo.naxe.idea.lang.NaxeToken.*"
+
+    implements  ="org.carracoo.naxe.idea.lang.psi.NaxePsiElement"
+    extends     ="org.carracoo.naxe.idea.lang.psi.NaxePsiElementImpl"
+
+
+
+    elementTypeHolderClass  ="org.carracoo.naxe.idea.lang.lexer.NaxeElements"
+    elementTypeClass        ="org.carracoo.naxe.idea.lang.NaxeToken"
+    tokenTypeClass          ="org.carracoo.naxe.idea.lang.NaxeToken"
+
+    psiPackage      = "org.carracoo.naxe.idea.lang.psi"
+    psiImplPackage  = "org.carracoo.naxe.idea.lang.psi"
+
+    psiClassPrefix      ="Naxe"
+    psiImplClassSuffix  ="Impl"
+
+    tokens            = [
+
+        K_PACKAGE       = "package"
+        K_USING         = "using"
+        K_IMPORT        = "import"
+        K_ENUM          = "enum"
+        K_CAST          = "cast"
+        K_CLASS         = "class"
+        K_INHERITS      = "inherits"
+        K_WITH          = "with"
+        K_ANY           = "any"
+        K_END           = "end"
+        K_FUNCTION      = "function"
+        K_VARIABLE      = "variable"
+        K_GETTER        = "getter"
+        K_SETTER        = "setter"
+        K_VAR           = "var"
+        K_ARG           = "arg"
+        K_ARGS          = "args"
+        K_IF            = "if"
+        K_ELSE          = "else"
+        K_SWITCH        = "switch"
+        K_CASE          = "case"
+        K_FOR           = "for"
+        K_UNTIL         = "until"
+        K_WHILE         = "while"
+        K_THROW         = "throw"
+        K_TRY           = "try"
+        K_CATCH         = "catch"
+        K_FINALLY       = "finally"
+        K_IN            = "in"
+        K_IS            = "is"
+        K_AS            = "as"
+        K_NEW           = "new"
+        K_STATIC        = "static"
+        K_BREAK         = "break"
+        K_CONTINUE      = "continue"
+        K_RETURN        = "return"
+        K_SUPER         = "super"
+        K_THIS          = "this"
+        K_TRUE          = "true"
+        K_FALSE         = "false"
+        K_NULL          = "null"
+        K_VOID          = "void"
+
+        O_SEM      = ";"
+        O_COM      = ","
+        O_COL      = ":"
+        O_NS       = "::"
+        O_PAR      = "..."
+        O_TO       = ".."
+        O_DOT      = "."
+        O_NUM      = "#"
+        O_QM       = "?"
+        O_AT       = "@"
+        O_FUN      = "->"
+
+
+
+        O_ASG      = "="
+        O_AADD     = "+="
+        O_ASUB     = "-="
+        O_AMUL     = "*="
+        O_ADIV     = "/="
+        O_AMOD     = "%="
+        O_AAND     = "&="
+        O_AOR      = "|="
+        O_AXOR     = "^="
+        O_ALSH     = "<<="
+        O_ARSH     = ">>="
+        O_AZSH     = ">>>="
+
+        O_EQS      = "==="
+        O_EQ       = "=="
+        O_NES      = "!=="
+        O_NE       = "!="
+        O_INC      = "++"
+        O_DEC      = "--"
+        O_INF      = "<"
+        O_SUP      = ">"
+        O_IEQ      = "<="
+        O_SEQ      = ">="
+
+        O_NOT      = "!"
+        O_NEG      = "~"
+
+        O_BAND     = "&&"
+        O_BOR      = "||"
+
+        O_SUM      = "+"
+        O_SUB      = "-"
+        O_MUL      = "*"
+        O_DIV      = "/"
+        O_MOD      = "%"
+        O_AND      = "&"
+        O_OR       = "|"
+        O_XOR      = "^"
+        O_LSH      = "<<"
+        O_RSH      = ">>"
+        O_ZSH      = ">>>"
+
+
+        LP       = "("
+        RP       = ")"
+        LB       = "{"
+        RB       = "}"
+        LS       = "["
+        RS       = "]"
+
+
+        SCOMMENT    = "regexp://.*"
+        DCOMMENT    = "regexp:/\*\*(.|\n)*\*/"
+        MCOMMENT    = "regexp:/\*(.|\n)*\*/"
+
+        REGEXP      = "regexp:~\/([^\/\\]|\\\/|\\)*\/[gim]{0,3}"
+        QSTRING     = "regexp:\"([^\"\\]|\\\"|\\\'|\\)*\""
+        SSTRING     = "regexp:\'([^\'\\]|\\\"|\\\'|\\)*\'"
+
+        INTEGER     = "regexp:\d+"
+        LONG        = "regexp:\d+l"
+        FLOAT       = "regexp:\d+\.\d+"
+        DOUBLE       = "regexp:\d+\.\d+d"
+        
+        ANNO        = "regexp:@\w+"
+        WORD        = "regexp:\w+"
+    ]
+
+    extends("(mul|sum|bsh|cmp|bit|log)_exp")    = binary_exp
+    extends(".*exp")                            = exp;
+    mixin("class_exp")                      = "org.carracoo.naxe.idea.lang.psi.NaxePsiClassImpl";
+    mixin("method_exp")                     = "org.carracoo.naxe.idea.lang.psi.NaxePsiMethodImpl";
+    mixin("property_exp")                   = "org.carracoo.naxe.idea.lang.psi.NaxePsiPropertyImpl";
+    mixin("ref|(id|this|super)_exp")        = "org.carracoo.naxe.idea.lang.psi.NaxePsiReferenceImpl";
+    implements("ref|(id|this|super)_exp")   = "org.carracoo.naxe.idea.lang.psi.NaxePsiReference";
+}
+
+naxe                ::= file_item*
+
+identifier          ::= WORD
+ref                 ::= identifier;
+qualifier           ::= ref qualified* {elementType=ref}
+left
+qualified           ::= '.' ref {elementType=ref}
+component_name      ::= identifier;
+component_type      ::= 'any'| 'void' | ref;
+
+annotation          ::= ('@'|ANNO)
+
+regexp_lit          ::= REGEXP
+string_lit          ::= QSTRING|SSTRING
+number_lit          ::= FLOAT|INTEGER|LONG|DOUBLE
+boolean_lit         ::= 'true'|'false'
+null_lit            ::= 'null'
+
+
+exp                        ::=(
+
+    closure_exp             |
+    define_exp              |
+
+    arg_exp                 |
+    var_exp                 |
+    asg_exp                 |
+    elv_exp                 |
+
+    log_exp                 |
+    bit_exp                 |
+    cmp_exp                 |
+    bsh_exp                 |
+    sum_exp                 |
+    mul_exp                 |
+
+    unary_grp               |
+    ref_grp                 |
+    call_exp                |
+    stm_grp                 |
+    meta_exp                |
+    primary_grp             |
+    access_exp              ) {recoverWhile=exp_rec};
+
+private ref_grp            ::=
+    cast_exp                |
+    as_exp                  |
+    new_exp                 |
+    cls_exp                 |
+    ref_exp                 ;
+
+private stm_grp            ::=
+    end_exp                 |
+    if_exp                  |
+    for_exp                 |
+    while_exp               |
+    until_exp               |
+    with_exp                ;
+
+
+private unary_grp          ::=
+    une_inc_exp             |
+    une_dec_exp             |
+    uns_min_exp             |
+    uns_neg_exp             |
+    uns_not_exp             |
+    uns_inc_exp             |
+    uns_dec_exp             |
+    uns_opt_exp             ;
+
+private primary_grp        ::=
+    id_exp                  |
+    this_exp                |
+    super_exp               |
+    args_exp                |
+    lit_exp                 |
+    paren_exp               ;
+
+fake binary_exp ::= exp+ {
+  methods=[
+    left  = "/exp[0]"
+    right = "/exp[1]"
+  ]
+}
+
+private asg_op ::= ('='|'+='|'-='|'*='|'/='|'%='|'&='|'|='|'^='|'<<='|'>>='|'>>>=');
+private cmp_op ::= ('<'|'>'|'<='|'>='|'=='|'==='|'!='|'!==');
+private add_op ::= ('+'|'-');
+private mul_op ::= ('*'|'/'|'%');
+private bsh_op ::= ('<<'|'>>'|'>>>');
+private bit_op ::= ('&'|'|'|'^');
+private log_op ::= ('&&'|'||');
+
+
+
+asg_exp                    ::= exp asg_op exp { rightAssociative=true }
+cmp_exp                    ::= exp cmp_op exp;
+sum_exp                    ::= exp add_op exp;
+mul_exp                    ::= exp mul_op exp;
+bsh_exp                    ::= exp bsh_op exp;
+bit_exp                    ::= exp bit_op exp;
+log_exp                    ::= exp log_op exp;
+
+elv_exp                    ::= exp '?' exp ':' exp;
+
+if_exp                     ::= 'if'     paren_exp exp ('else' exp)? {pin=1}
+for_exp                    ::= 'for'    paren_exp exp {pin=1}
+while_exp                  ::= 'while'  paren_exp exp {pin=1}
+until_exp                  ::= 'until'  paren_exp exp {pin=1}
+with_exp                   ::= 'with'   paren_exp exp {pin=1}
+end_exp                    ::= 'end'    exp?          {pin=1}
+
+uns_inc_exp                ::= '++' exp
+uns_dec_exp                ::= '--' exp
+uns_min_exp                ::= '-'  exp
+uns_neg_exp                ::= '~'  exp
+uns_not_exp                ::= '!'  exp
+une_inc_exp                ::= exp '++'
+une_dec_exp                ::= exp '--'
+uns_opt_exp                ::= exp '!'
+
+
+inherits_exp               ::= meta_exp? 'inherits' ref (',' ref)* {pin=2};
+package_exp                ::= meta_exp? 'package' qualifier {pin=2};
+import_exp                 ::= meta_exp? 'import' qualifier ('as' ref)? {pin=2};
+
+
+arg_exp                    ::= meta_exp? 'arg' component_name ':' component_type {pin=2}
+var_exp                    ::= meta_exp? 'var' component_name ':' component_type {pin=2}
+define_exp                 ::= meta_exp? component_name  ':' component_type {pin=3}
+closure_exp                ::= meta_exp? component_name? ':' component_type paren_exp {pin=3};
+
+
+
+
+meta_exp                   ::= annotation call_arg? {pin=1};
+access_exp                 ::= exp '.' exp  {pin=1}
+
+call_exp                   ::= exp call_arg
+call_arg                   ::= '(' [ !')' exp  (',' exp)* ] ')' {pin=1}
+
+cls_exp                    ::= exp '.' 'class';
+new_exp                    ::= exp '.' 'new'    call_arg?;
+cast_exp                   ::= exp '.' 'cast'   call_arg?;
+as_exp                     ::= exp '.' 'as'     call_arg?;
+ref_exp                    ::= exp '.' ref;
+id_exp                     ::= ref
+this_exp                   ::= 'this'
+super_exp                  ::= 'super'
+args_exp                   ::= 'args'
+
+lit_exp                    ::=
+    null_lit                |
+    boolean_lit             |
+    number_lit              |
+    regexp_lit              |
+    string_lit              |
+    object_exp              |
+    array_exp               ;
+paren_exp                  ::= paren {pin=1}
+array_exp                  ::= '[' exp (',' exp)* ']' {pin=1};
+object_exp                 ::= '{' object_pair? (',' object_pair)* '}' {pin=1};
+object_pair                ::= (identifier|string_lit) ':' exp
+
+private file_item          ::= package_exp | import_exp | class_exp {recoverWhile=file_rec};
+private file_rec           ::= !('package'|'class'|'import'|meta_exp);
+
+class_exp                  ::= meta_exp? 'class' component_name class_body? {pin=3};
+class_body                 ::= '(' class_item* ')' {pin=1}
+private class_item         ::= method_exp | property_exp | inherits_exp {recoverWhile=class_rec};
+private class_rec          ::= !('('|')'|'variable'|'function'|'inherits'|meta_exp);
+
+property_exp               ::= meta_exp? 'variable' component_name ':' component_type property_body? {pin=3};
+property_body              ::= '(' property_item* ')' {pin=1}
+private property_item      ::= getter_exp | setter_exp {recoverWhile = property_rec};
+private property_rec       ::= !('('|')'|'setter'|'getter'|meta_exp);
+
+getter_exp                 ::= meta_exp? 'getter' getter_body? {pin=3};
+getter_body                ::= paren;
+
+setter_exp                 ::= meta_exp? 'setter' setter_body? {pin=3};
+setter_body                ::= paren;
+
+method_exp                 ::= meta_exp? 'function' component_name ':' component_type method_body? {pin=3};
+method_body                ::= '(' exp* ')'
+
+private define             ::= component_name ':' component_type;
+private paren              ::= '(' exp* ')' {pin=1}
+private exp_rec            ::= !('('|')'|';'|'{'|'}'|'['|']'|':'|'@'|WORD|ANNO|'function'|'variable'|'class'|'getter'|'setter');
