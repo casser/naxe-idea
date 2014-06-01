@@ -122,7 +122,7 @@ QSTRING      = \"([^\\\"\r\n]|{ESCAPE_SEQUENCE})*(\"|\\)?
   "#"                { return O_NUM; }
   "?"                { return O_QM; }
   "@"                { return O_AT; }
-  "->"               { return O_FUN; }
+  "<:"               { return O_FUN; }
   "="                { return O_ASG; }
   "+="               { return O_AADD; }
   "-="               { return O_ASUB; }

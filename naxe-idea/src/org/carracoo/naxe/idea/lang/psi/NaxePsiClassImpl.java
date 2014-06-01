@@ -102,4 +102,8 @@ public abstract class NaxePsiClassImpl extends NaxeExpImpl implements NaxePsiCla
         }
         return properties;
     }
+
+
+
+
 }

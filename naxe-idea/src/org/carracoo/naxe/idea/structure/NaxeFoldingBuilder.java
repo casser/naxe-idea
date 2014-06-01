@@ -7,7 +7,10 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
 import org.carracoo.naxe.idea.lang.lexer.NaxeElements;
 import org.carracoo.naxe.idea.lang.psi.NaxeMetaExp;
+import org.carracoo.naxe.idea.lang.psi.NaxeMethodBody;
 import org.carracoo.naxe.idea.lang.psi.NaxeParenExp;
+import org.carracoo.naxe.idea.lang.psi.NaxePropertyBody;
+import org.carracoo.naxe.idea.utils.NaxePsiUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,8 +38,7 @@ public class NaxeFoldingBuilder implements FoldingBuilder {
             NaxeElements.CLASS_BODY.equals(node.getElementType())     ||
             NaxeElements.PROPERTY_BODY.equals(node.getElementType())  ||
             NaxeElements.METHOD_BODY.equals(node.getElementType())    ||
-            NaxeElements.GETTER_BODY.equals(node.getElementType())    ||
-            NaxeElements.SETTER_BODY.equals(node.getElementType())
+            NaxeElements.CLOSURE_EXP.equals(node.getElementType())
         ) {
             final TextRange range = node.getTextRange();
             if(range.getLength()>3) {
@@ -51,6 +53,12 @@ public class NaxeFoldingBuilder implements FoldingBuilder {
     @Nullable
     @Override
     public String getPlaceholderText(@NotNull ASTNode node) {
+        if(node.getPsi() instanceof NaxeMethodBody){
+            return "«("+NaxePsiUtils.getScopeParamsString(node.getPsi())+")";
+        }
+        if(node.getPsi() instanceof NaxePropertyBody){
+            return "«("+NaxePsiUtils.getPropertyAccessString(node.getPsi())+")";
+        }
         if(node.getPsi() instanceof NaxeMetaExp){
             return "@(...)";
         }

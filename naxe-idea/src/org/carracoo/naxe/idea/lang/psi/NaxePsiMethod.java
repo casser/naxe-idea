@@ -8,9 +8,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface NaxePsiMethod extends NaxeExp, NaxeComponent{
     @Nullable
-    NaxeMetaExp getMetaExp();
-
-    @Nullable
     NaxeMethodBody getMethodBody();
 
 }

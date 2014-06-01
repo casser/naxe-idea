@@ -24,6 +24,7 @@
         K_PACKAGE       = "package"
         K_USING         = "using"
         K_IMPORT        = "import"
+        K_RENAME        = "rename"
         K_ENUM          = "enum"
         K_CAST          = "cast"
         K_CLASS         = "class"
@@ -74,7 +75,7 @@
         O_NUM      = "#"
         O_QM       = "?"
         O_AT       = "@"
-        O_FUN      = "->"
+        O_FUN      = "<:"
 
 
 
@@ -145,14 +146,14 @@
         ANNO        = "regexp:@\w+"
         WORD        = "regexp:\w+"
     ]
-
-    extends("(mul|sum|bsh|cmp|bit|log)_exp")    = binary_exp
-    extends(".*exp")                            = exp;
-    mixin("class_exp")                      = "org.carracoo.naxe.idea.lang.psi.NaxePsiClassImpl";
-    mixin("method_exp")                     = "org.carracoo.naxe.idea.lang.psi.NaxePsiMethodImpl";
-    mixin("property_exp")                   = "org.carracoo.naxe.idea.lang.psi.NaxePsiPropertyImpl";
-    mixin("ref|(id|this|super)_exp")        = "org.carracoo.naxe.idea.lang.psi.NaxePsiReferenceImpl";
-    implements("ref|(id|this|super)_exp")   = "org.carracoo.naxe.idea.lang.psi.NaxePsiReference";
+    extends(".*exp")
+     = exp;
+    extends("(mul|sum|bsh|cmp|bit|log)_exp")
+     = binary_exp
+    mixin("ref|(id|this|super)_exp")
+     = "org.carracoo.naxe.idea.lang.psi.NaxePsiReferenceImpl";
+    implements("ref|(id|this|super)_exp")
+     = "org.carracoo.naxe.idea.lang.psi.NaxePsiReference";
 }
 
 naxe                ::= file_item*
@@ -163,7 +164,8 @@ qualifier           ::= ref qualified* {elementType=ref}
 left
 qualified           ::= '.' ref {elementType=ref}
 component_name      ::= identifier;
-component_type      ::= 'any'| 'void' | ref;
+component_type      ::= 'any' | 'void' | component_name type_params?;
+type_params         ::= '[' component_type* ']'
 
 annotation          ::= ('@'|ANNO)
 
@@ -177,13 +179,9 @@ null_lit            ::= 'null'
 exp                        ::=(
 
     closure_exp             |
-    define_exp              |
-
-    arg_exp                 |
     var_exp                 |
+    arg_exp                 |
     asg_exp                 |
-    elv_exp                 |
-
     log_exp                 |
     bit_exp                 |
     cmp_exp                 |
@@ -258,8 +256,6 @@ bsh_exp                    ::= exp bsh_op exp;
 bit_exp                    ::= exp bit_op exp;
 log_exp                    ::= exp log_op exp;
 
-elv_exp                    ::= exp '?' exp ':' exp;
-
 if_exp                     ::= 'if'     paren_exp exp ('else' exp)? {pin=1}
 for_exp                    ::= 'for'    paren_exp exp {pin=1}
 while_exp                  ::= 'while'  paren_exp exp {pin=1}
@@ -277,24 +273,19 @@ une_dec_exp                ::= exp '--'
 uns_opt_exp                ::= exp '!'
 
 
-inherits_exp               ::= meta_exp? 'inherits' ref (',' ref)* {pin=2};
-package_exp                ::= meta_exp? 'package' qualifier {pin=2};
-import_exp                 ::= meta_exp? 'import' qualifier ('as' ref)? {pin=2};
-
-
-arg_exp                    ::= meta_exp? 'arg' component_name ':' component_type {pin=2}
-var_exp                    ::= meta_exp? 'var' component_name ':' component_type {pin=2}
-define_exp                 ::= meta_exp? component_name  ':' component_type {pin=3}
-closure_exp                ::= meta_exp? component_name? ':' component_type paren_exp {pin=3};
+arg_exp                    ::= meta_exp? 'arg' component_name  ':' component_type anno{pin=2}
+var_exp                    ::= meta_exp? component_name  ':' component_type anno{pin=3}
+closure_exp                ::= meta_exp? '?' method_body ':' component_type anno{pin=2};
 
 
 
 
-meta_exp                   ::= annotation call_arg? {pin=1};
+private anno               ::= ('<:' meta_exp)?
+meta_exp                   ::= annotation paren? {pin=1};
 access_exp                 ::= exp '.' exp  {pin=1}
 
-call_exp                   ::= exp call_arg
-call_arg                   ::= '(' [ !')' exp  (',' exp)* ] ')' {pin=1}
+call_exp                   ::= exp '(' [ !')' call_arg  (',' call_arg)* ] ')'
+call_arg                   ::= (ref '::')? exp {pin=2}
 
 cls_exp                    ::= exp '.' 'class';
 new_exp                    ::= exp '.' 'new'    call_arg?;
@@ -319,28 +310,45 @@ array_exp                  ::= '[' exp (',' exp)* ']' {pin=1};
 object_exp                 ::= '{' object_pair? (',' object_pair)* '}' {pin=1};
 object_pair                ::= (identifier|string_lit) ':' exp
 
-private file_item          ::= package_exp | import_exp | class_exp {recoverWhile=file_rec};
-private file_rec           ::= !('package'|'class'|'import'|meta_exp);
+private file_item          ::= import_exp | class_exp | rename_exp {recoverWhile=file_rec};
+private file_rec           ::= !('package'|'class'|'import'|'rename'|':'|meta_exp);
 
-class_exp                  ::= meta_exp? 'class' component_name class_body? {pin=3};
+import_exp                 ::= meta_exp* 'import' (component_name ':')? string_lit anno {pin=2};
+rename_exp                 ::= meta_exp* 'rename' (component_name ':')? component_type anno {pin=2};
+
+class_exp                  ::= meta_exp* 'class' component_name type_params? class_body? anno {
+    pin=3
+    implements             =  "org.carracoo.naxe.idea.lang.psi.NaxePsiClass"
+    mixin                  =  "org.carracoo.naxe.idea.lang.psi.NaxePsiClassImpl"
+}
 class_body                 ::= '(' class_item* ')' {pin=1}
 private class_item         ::= method_exp | property_exp | inherits_exp {recoverWhile=class_rec};
 private class_rec          ::= !('('|')'|'variable'|'function'|'inherits'|meta_exp);
 
-property_exp               ::= meta_exp? 'variable' component_name ':' component_type property_body? {pin=3};
+inherits_exp               ::= meta_exp* 'inherits' component_type* anno {pin=2};
+
+property_exp               ::= meta_exp* 'variable' component_name  property_body? ':' component_type anno {
+    pin                    = 5
+    implements             = "org.carracoo.naxe.idea.lang.psi.NaxePsiProperty"
+    mixin                  = "org.carracoo.naxe.idea.lang.psi.NaxePsiPropertyImpl"
+}
 property_body              ::= '(' property_item* ')' {pin=1}
 private property_item      ::= getter_exp | setter_exp {recoverWhile = property_rec};
 private property_rec       ::= !('('|')'|'setter'|'getter'|meta_exp);
 
-getter_exp                 ::= meta_exp? 'getter' getter_body? {pin=3};
-getter_body                ::= paren;
+getter_exp                 ::= meta_exp* 'getter' method_body? {pin=3};
+setter_exp                 ::= meta_exp* 'setter' method_body? {pin=3};
 
-setter_exp                 ::= meta_exp? 'setter' setter_body? {pin=3};
-setter_body                ::= paren;
+method_exp                 ::= meta_exp* 'function' component_name method_body? ':' component_type anno {
+    pin                    = 5
+    implements             = "org.carracoo.naxe.idea.lang.psi.NaxePsiMethod"
+    mixin                  = "org.carracoo.naxe.idea.lang.psi.NaxePsiMethodImpl"
+}
 
-method_exp                 ::= meta_exp? 'function' component_name ':' component_type method_body? {pin=3};
-method_body                ::= '(' exp* ')'
+method_body                ::= paren {
+    implements             =  "org.carracoo.naxe.idea.lang.psi.NaxeExecutionScope"
+    mixin                  =  "org.carracoo.naxe.idea.lang.psi.NaxeExecutionScopeImpl"
+}
 
-private define             ::= component_name ':' component_type;
 private paren              ::= '(' exp* ')' {pin=1}
-private exp_rec            ::= !('('|')'|';'|'{'|'}'|'['|']'|':'|'@'|WORD|ANNO|'function'|'variable'|'class'|'getter'|'setter');
+private exp_rec            ::= !('('|')'|';'|'{'|'}'|'['|']'|':'|'::'|'<:'|'@'|WORD|ANNO|'function'|'variable'|'class'|'getter'|'setter');
