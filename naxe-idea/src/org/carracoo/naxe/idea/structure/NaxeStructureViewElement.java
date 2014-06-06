@@ -68,7 +68,7 @@ public class NaxeStructureViewElement implements StructureViewTreeElement,Sortab
         if(element instanceof NaxePsiClass){
             NaxePsiClass classElement = ((NaxePsiClass)element);
             for(PsiElement child:classElement.getDefinitions()){
-                if(child instanceof NaxePsiMethod || child instanceof NaxePsiProperty ){
+                if(child instanceof NaxePsiMethod || child instanceof NaxePsiProperty || child instanceof NaxePsiOperator ){
                     result.add(new NaxeStructureViewElement(child));
                 }
             }

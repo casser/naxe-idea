@@ -34,6 +34,7 @@ public class NaxeFoldingBuilder implements FoldingBuilder {
             NaxeElements.S_METAS.equals(node.getElementType())        ||
             NaxeElements.E_METAS.equals(node.getElementType())        ||
             NaxeElements.CLASS_BODY.equals(node.getElementType())     ||
+            NaxeElements.OPERATOR_BODY.equals(node.getElementType())  ||
             NaxeElements.PROPERTY_BODY.equals(node.getElementType())  ||
             NaxeElements.METHOD_BODY.equals(node.getElementType())    ||
             NaxeElements.CLOSURE_EXP.equals(node.getElementType())
@@ -51,11 +52,14 @@ public class NaxeFoldingBuilder implements FoldingBuilder {
     @Nullable
     @Override
     public String getPlaceholderText(@NotNull ASTNode node) {
+        if(node.getPsi() instanceof NaxeOperatorBody){
+            return "§("+NaxePsiUtils.getScopeParamsString(node.getPsi())+")";
+        }
         if(node.getPsi() instanceof NaxeMethodBody){
             return "«("+NaxePsiUtils.getScopeParamsString(node.getPsi())+")";
         }
         if(node.getPsi() instanceof NaxePropertyBody){
-            return "«("+NaxePsiUtils.getPropertyAccessString(node.getPsi())+")";
+            return ":("+NaxePsiUtils.getPropertyAccessString(node.getPsi())+")";
         }
         if(node.getPsi() instanceof NaxeSMetas){
             return "(..)@»";

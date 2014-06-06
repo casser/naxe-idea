@@ -36,7 +36,7 @@ public abstract class NaxePsiMethodImpl extends NaxeExpImpl implements NaxePsiMe
             @Nullable
             @Override
             public Icon getIcon(boolean unused) {
-                return AllIcons.Nodes.Function;
+                return AllIcons.Nodes.Method;
             }
         };
     }

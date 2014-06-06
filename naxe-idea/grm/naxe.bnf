@@ -32,6 +32,7 @@
         K_WITH          = "with"
         K_ANY           = "any"
         K_END           = "end"
+        K_OPERATOR      = "operator"
         K_FUNCTION      = "function"
         K_VARIABLE      = "variable"
         K_GETTER        = "getter"
@@ -238,10 +239,10 @@ private mul_op ::= ('*'|'/'|'%');
 private bsh_op ::= ('<<'|'>>'|'>>>');
 private bit_op ::= ('&'|'|'|'^');
 private log_op ::= ('&&'|'||');
-private operator ::= asg_op|cmp_op|add_op|mul_op|bsh_op|bit_op|log_op;
+private op     ::= asg_op|cmp_op|add_op|mul_op|bsh_op|bit_op|log_op;
 
 empty_exp                  ::=';';
-error_exp                  ::=(operator|',');
+error_exp                  ::=(op|',');
 
 asg_exp                    ::= exp asg_op exp { pin=2 rightAssociative=true }
 cmp_exp                    ::= exp cmp_op exp { pin=2};
@@ -343,8 +344,8 @@ class_exp                  ::= 'class' component_name type_params? class_body? {
     mixin                  =  "org.carracoo.naxe.idea.lang.psi.NaxePsiClassImpl"
 }
 class_body                 ::= '(' class_item*')' {pin=1}
-private class_item         ::= s_metas? (method_exp | property_exp | inherits_exp|empty_exp) e_metas? { pin=3 recoverWhile=class_rec};
-private class_rec          ::= !('('|')'|';'|'variable'|'function'|'inherits'|s_meta);
+private class_item         ::= s_metas? (operator_exp | method_exp | property_exp | inherits_exp |empty_exp) e_metas? { pin=3 recoverWhile=class_rec};
+private class_rec          ::= !('('|')'|';'|'variable'|'function'|'inherits'|'operator'|s_meta);
 
 inherits_exp               ::= 'inherits' component_type* {pin=2};
 
@@ -360,6 +361,17 @@ private property_rec       ::= !('('|')'|';'|'setter'|'getter');
 
 getter_exp                 ::= s_metas? 'getter' method_body? e_metas? {pin=3};
 setter_exp                 ::= s_metas? 'setter' method_body? e_metas? {pin=3};
+
+operator_name              ::= op {elementType=component_name};
+operator_exp               ::= 'operator' operator_name operator_body ':' component_type  {
+    pin                    = 5
+    implements             = "org.carracoo.naxe.idea.lang.psi.NaxePsiOperator"
+    mixin                  = "org.carracoo.naxe.idea.lang.psi.NaxePsiOperatorImpl"
+}
+operator_body              ::= paren {
+    implements             =  "org.carracoo.naxe.idea.lang.psi.NaxeExecutionScope"
+    mixin                  =  "org.carracoo.naxe.idea.lang.psi.NaxeExecutionScopeImpl"
+}
 
 method_exp                 ::= 'function' ('new'|component_name) method_body? ':' component_type {
     pin                    = 5

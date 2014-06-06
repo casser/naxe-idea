@@ -68,6 +68,7 @@ public abstract class NaxePsiClassImpl extends NaxeExpImpl implements NaxePsiCla
         List<NaxePsiElement> definitions = new ArrayList<NaxePsiElement>();
         definitions.addAll(PsiTreeUtil.findChildrenOfType(this, NaxePsiMethod.class));
         definitions.addAll(PsiTreeUtil.findChildrenOfType(this, NaxePsiProperty.class));
+        definitions.addAll(PsiTreeUtil.findChildrenOfType(this, NaxePsiOperator.class));
         return definitions;
     }
 

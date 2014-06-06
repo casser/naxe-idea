@@ -33,6 +33,7 @@ public class NaxeToken extends IElementType implements NaxeElements {
         K_CLASS,
         K_VARIABLE,
         K_FUNCTION,
+        K_OPERATOR,
         K_GETTER,
         K_SETTER,
         K_ARG,

@@ -81,6 +81,7 @@ QSTRING      = \"([^\\\"\r\n]|{ESCAPE_SEQUENCE})*(\"|\\)?
   "inherits"         { return K_INHERITS; }
   "with"             { return K_WITH; }
   "function"         { return K_FUNCTION; }
+  "operator"         { return K_OPERATOR; }
   "variable"         { return K_VARIABLE; }
   "getter"           { return K_GETTER; }
   "setter"           { return K_SETTER; }
