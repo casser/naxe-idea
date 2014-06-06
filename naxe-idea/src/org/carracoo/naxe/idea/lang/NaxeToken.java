@@ -17,17 +17,18 @@ public class NaxeToken extends IElementType implements NaxeElements {
     public static final TokenSet COMMENT  = TokenSet.create(DCOMMENT,SCOMMENT,MCOMMENT);
 
     public static final TokenSet METADATA = TokenSet.create(
-        ANNO
+        SMETA,EMETA,O_EAT,O_SAT
     );
     public static final TokenSet OPERATORS  = TokenSet.create(
         O_NEG, O_NOT, O_SUM, O_SUB, O_MUL, O_DIV, O_MOD, O_AND, O_OR, O_ASG, O_SUP,
-        O_INF, O_SEQ, O_IEQ, O_NE, O_NES, O_EQ, O_EQS, O_AT,  O_QM, O_SEM, O_COM,
+        O_INF, O_SEQ, O_IEQ, O_NE, O_NES, O_EQ, O_EQS, O_QM, O_SEM, O_COM,
         O_COL, O_NS,  O_DOT, O_TO,  O_PAR, O_INC, O_DEC
     );
     public static final TokenSet KEYWORD  = TokenSet.create(
         K_PACKAGE,
         K_USING,
         K_IMPORT,
+        K_RENAME,
         K_ENUM,
         K_CLASS,
         K_VARIABLE,

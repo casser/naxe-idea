@@ -6,10 +6,7 @@ import com.intellij.lang.folding.FoldingDescriptor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
 import org.carracoo.naxe.idea.lang.lexer.NaxeElements;
-import org.carracoo.naxe.idea.lang.psi.NaxeMetaExp;
-import org.carracoo.naxe.idea.lang.psi.NaxeMethodBody;
-import org.carracoo.naxe.idea.lang.psi.NaxeParenExp;
-import org.carracoo.naxe.idea.lang.psi.NaxePropertyBody;
+import org.carracoo.naxe.idea.lang.psi.*;
 import org.carracoo.naxe.idea.utils.NaxePsiUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +31,8 @@ public class NaxeFoldingBuilder implements FoldingBuilder {
     private static void buildFolding(ASTNode node, List<FoldingDescriptor> list) {
         if (
             NaxeElements.PAREN_EXP.equals(node.getElementType())      ||
-            NaxeElements.META_EXP.equals(node.getElementType())       ||
+            NaxeElements.S_METAS.equals(node.getElementType())        ||
+            NaxeElements.E_METAS.equals(node.getElementType())        ||
             NaxeElements.CLASS_BODY.equals(node.getElementType())     ||
             NaxeElements.PROPERTY_BODY.equals(node.getElementType())  ||
             NaxeElements.METHOD_BODY.equals(node.getElementType())    ||
@@ -59,8 +57,11 @@ public class NaxeFoldingBuilder implements FoldingBuilder {
         if(node.getPsi() instanceof NaxePropertyBody){
             return "«("+NaxePsiUtils.getPropertyAccessString(node.getPsi())+")";
         }
-        if(node.getPsi() instanceof NaxeMetaExp){
-            return "@(...)";
+        if(node.getPsi() instanceof NaxeSMetas){
+            return "(..)@»";
+        }
+        if(node.getPsi() instanceof NaxeEMetas){
+            return "«@(..)";
         }
         if(node.getPsi() instanceof NaxeParenExp){
             return "(...)";

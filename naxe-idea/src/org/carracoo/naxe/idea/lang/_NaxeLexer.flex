@@ -22,7 +22,8 @@ EOL="\r"|"\n"|"\r\n"
 LINE_WS=[\ \t\f]
 
 WORD      = [:jletter:][:jletterdigit:]*
-ANNO       = "@"[:jletter:][:jletterdigit:]*
+SMETA     = "@"[:jletter:][:jletterdigit:]*
+EMETA     = "@:"[:jletter:][:jletterdigit:]*
 
 
 
@@ -73,6 +74,7 @@ QSTRING      = \"([^\\\"\r\n]|{ESCAPE_SEQUENCE})*(\"|\\)?
   "package"          { return K_PACKAGE; }
   "using"            { return K_USING; }
   "import"           { return K_IMPORT; }
+  "rename"           { return K_RENAME; }
   "enum"             { return K_ENUM; }
   "cast"             { return K_CAST; }
   "class"            { return K_CLASS; }
@@ -121,7 +123,8 @@ QSTRING      = \"([^\\\"\r\n]|{ESCAPE_SEQUENCE})*(\"|\\)?
   "."                { return O_DOT; }
   "#"                { return O_NUM; }
   "?"                { return O_QM; }
-  "@"                { return O_AT; }
+  "@"                { return O_SAT; }
+  "@:"               { return O_EAT; }
   "<:"               { return O_FUN; }
   "="                { return O_ASG; }
   "+="               { return O_AADD; }
@@ -177,7 +180,8 @@ QSTRING      = \"([^\\\"\r\n]|{ESCAPE_SEQUENCE})*(\"|\\)?
   {LLONG}            { return LONG; }
   {LFLOAT}           { return FLOAT; }
   {LDOUBLE}          { return DOUBLE; }
-  {ANNO}             { return ANNO; }
+  {SMETA}            { return SMETA; }
+  {EMETA}            { return EMETA; }
   {WORD}             { return WORD; }
 
   . { return com.intellij.psi.TokenType.BAD_CHARACTER; }
