@@ -6,4 +6,6 @@ package org.carracoo.naxe.idea.lang.psi;
 public interface NaxeComponent extends NaxeExp {
     NaxePsiElement getComponentName();
     NaxePsiElement getComponentType();
+
+    String getQualifiedName();
 }

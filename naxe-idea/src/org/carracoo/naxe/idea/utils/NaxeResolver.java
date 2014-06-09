@@ -19,6 +19,8 @@ import java.util.List;
 public class NaxeResolver implements ResolveCache.AbstractResolver<NaxePsiReference, List<? extends PsiElement>> {
     public static final NaxeResolver INSTANCE = new NaxeResolver();
 
+
+
     public static ResolveResult[] resolveCachedAsResults(Project project, NaxePsiReference reference, boolean needToPreventRecursion, boolean incompleteCode){
         return toResolveResults(resolveCachedAsElements(project,reference,needToPreventRecursion,incompleteCode));
     }

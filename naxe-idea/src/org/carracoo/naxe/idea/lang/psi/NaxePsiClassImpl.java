@@ -3,8 +3,9 @@ package org.carracoo.naxe.idea.lang.psi;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.util.PsiTreeUtil;
+import org.carracoo.naxe.idea.lang.NaxeFileImpl;
 import org.carracoo.naxe.idea.utils.NaxeIcons;
-import org.carracoo.naxe.idea.utils.NaxePsiUtils;
+import org.carracoo.naxe.idea.utils.NaxePsiUtil;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -32,13 +33,14 @@ public abstract class NaxePsiClassImpl extends NaxeExpImpl implements NaxePsiCla
 
     @Override
     public String getPackageName() {
-        return NaxePsiUtils.getPackageName(this.getContainingFile());
+        return NaxePsiUtil.getPackageName(this.getContainingFile());
     }
 
     @Override
     public String getQualifiedName() {
-        return NaxePsiUtils.joinQName(NaxePsiUtils.getPackageName(this.getContainingFile()),getName());
+        return NaxePsiUtil.getPackageName(this.getContainingFile())+"."+getComponentName().getText();
     }
+
 
     @Override
     public ItemPresentation getPresentation() {
@@ -46,7 +48,7 @@ public abstract class NaxePsiClassImpl extends NaxeExpImpl implements NaxePsiCla
             @Nullable
             @Override
             public String getPresentableText() {
-                return getName();
+                return getQualifiedName();
             }
 
             @Nullable

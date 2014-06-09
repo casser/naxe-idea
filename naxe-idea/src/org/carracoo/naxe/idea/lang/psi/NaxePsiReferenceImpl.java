@@ -1,25 +1,15 @@
 package org.carracoo.naxe.idea.lang.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.ResolveResult;
-import com.intellij.psi.impl.source.resolve.ResolveCache;
-import com.intellij.psi.infos.CandidateInfo;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import org.carracoo.naxe.idea.utils.NaxeIcons;
 import org.carracoo.naxe.idea.utils.NaxeResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import sun.tools.tree.ThisExpression;
-
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Sergey on 5/27/14.

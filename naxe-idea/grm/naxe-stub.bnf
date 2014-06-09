@@ -1,0 +1,158 @@
+{
+
+    parserClass     ="org.carracoo.naxe.idea.lang.parser.NaxeParser"
+    parserUtilClass ="com.intellij.lang.parser.GeneratedParserUtilBase"
+    parserImports   ="static org.carracoo.naxe.idea.lang.NaxeToken.*"
+
+    //implements  ="org.carracoo.naxe.idea.lang.psi.NaxePsiElement"
+    //extends     ="org.carracoo.naxe.idea.lang.psi.NaxePsiElementImpl"
+
+
+
+    elementTypeHolderClass  ="org.carracoo.naxe.idea.lang.lexer.NaxeElements"
+    elementTypeClass        ="org.carracoo.naxe.idea.lang.NaxeToken"
+    tokenTypeClass          ="org.carracoo.naxe.idea.lang.NaxeToken"
+
+    psiPackage      = "org.carracoo.naxe.idea.lang.psi"
+    psiImplPackage  = "org.carracoo.naxe.idea.lang.psi"
+
+    psiClassPrefix      ="Naxe"
+    psiImplClassSuffix  ="Impl"
+    generatePsi=true
+    tokens            = [
+
+        K_PACKAGE       = "package"
+        K_USING         = "using"
+        K_IMPORT        = "import"
+        K_RENAME        = "rename"
+        K_ENUM          = "enum"
+        K_CAST          = "cast"
+        K_CLASS         = "class"
+        K_INHERITS      = "inherits"
+        K_WITH          = "with"
+        K_ANY           = "any"
+        K_END           = "end"
+        K_FUNCTION      = "function"
+        K_VARIABLE      = "variable"
+        K_GETTER        = "getter"
+        K_SETTER        = "setter"
+        K_VAR           = "var"
+        K_ARG           = "arg"
+        K_ARGS          = "args"
+        K_IF            = "if"
+        K_ELSE          = "else"
+        K_SWITCH        = "switch"
+        K_CASE          = "case"
+        K_FOR           = "for"
+        K_UNTIL         = "until"
+        K_WHILE         = "while"
+        K_THROW         = "throw"
+        K_TRY           = "try"
+        K_CATCH         = "catch"
+        K_FINALLY       = "finally"
+        K_IN            = "in"
+        K_IS            = "is"
+        K_AS            = "as"
+        K_NEW           = "new"
+        K_STATIC        = "static"
+        K_BREAK         = "break"
+        K_CONTINUE      = "continue"
+        K_RETURN        = "return"
+        K_SUPER         = "super"
+        K_THIS          = "this"
+        K_TRUE          = "true"
+        K_FALSE         = "false"
+        K_NULL          = "null"
+        K_VOID          = "void"
+
+        O_SEM      = ";"
+        O_COM      = ","
+        O_COL      = ":"
+        O_NS       = "::"
+        O_PAR      = "..."
+        O_TO       = ".."
+        O_DOT      = "."
+        O_NUM      = "#"
+        O_QM       = "?"
+        O_AT       = "@"
+        O_FUN      = "<:"
+
+
+
+        O_ASG      = "="
+        O_AADD     = "+="
+        O_ASUB     = "-="
+        O_AMUL     = "*="
+        O_ADIV     = "/="
+        O_AMOD     = "%="
+        O_AAND     = "&="
+        O_AOR      = "|="
+        O_AXOR     = "^="
+        O_ALSH     = "<<="
+        O_ARSH     = ">>="
+        O_AZSH     = ">>>="
+
+        O_EQS      = "==="
+        O_EQ       = "=="
+        O_NES      = "!=="
+        O_NE       = "!="
+        O_INC      = "++"
+        O_DEC      = "--"
+        O_INF      = "<"
+        O_SUP      = ">"
+        O_IEQ      = "<="
+        O_SEQ      = ">="
+
+        O_NOT      = "!"
+        O_NEG      = "~"
+
+        O_BAND     = "&&"
+        O_BOR      = "||"
+
+        O_SUM      = "+"
+        O_SUB      = "-"
+        O_MUL      = "*"
+        O_DIV      = "/"
+        O_MOD      = "%"
+        O_AND      = "&"
+        O_OR       = "|"
+        O_XOR      = "^"
+        O_LSH      = "<<"
+        O_RSH      = ">>"
+        O_ZSH      = ">>>"
+
+
+        LP       = "("
+        RP       = ")"
+        LB       = "{"
+        RB       = "}"
+        LS       = "["
+        RS       = "]"
+
+
+        SCOMMENT    = "regexp://.*"
+        DCOMMENT    = "regexp:/\*\*(.|\n)*\*/"
+        MCOMMENT    = "regexp:/\*(.|\n)*\*/"
+
+        REGEXP      = "regexp:~\/([^\/\\]|\\\/|\\)*\/[gim]{0,3}"
+        QSTRING     = "regexp:\"([^\"\\]|\\\"|\\\'|\\)*\""
+        SSTRING     = "regexp:\'([^\'\\]|\\\"|\\\'|\\)*\'"
+
+        INTEGER     = "regexp:\d+"
+        LONG        = "regexp:\d+l"
+        FLOAT       = "regexp:\d+\.\d+"
+        DOUBLE       = "regexp:\d+\.\d+d"
+        
+        ANNO        = "regexp:@\w+"
+        WORD        = "regexp:\w+"
+    ]
+    extends("class_stm")="org.carracoo.naxe.idea.lang.psi.stub.NaxeClass"
+    implements("class_stm")="com.intellij.psi.PsiClass"
+}
+
+naxe       ::= class_stm*
+class_stm  ::= identifier '=' literal;
+//file_item*
+
+identifier          ::= WORD
+literal             ::= QSTRING|SSTRING

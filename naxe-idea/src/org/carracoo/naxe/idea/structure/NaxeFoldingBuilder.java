@@ -7,7 +7,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
 import org.carracoo.naxe.idea.lang.lexer.NaxeElements;
 import org.carracoo.naxe.idea.lang.psi.*;
-import org.carracoo.naxe.idea.utils.NaxePsiUtils;
+import org.carracoo.naxe.idea.utils.NaxePsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,13 +53,13 @@ public class NaxeFoldingBuilder implements FoldingBuilder {
     @Override
     public String getPlaceholderText(@NotNull ASTNode node) {
         if(node.getPsi() instanceof NaxeOperatorBody){
-            return "§("+NaxePsiUtils.getScopeParamsString(node.getPsi())+")";
+            return "§("+ NaxePsiUtil.getScopeParamsString(node.getPsi())+")";
         }
         if(node.getPsi() instanceof NaxeMethodBody){
-            return "«("+NaxePsiUtils.getScopeParamsString(node.getPsi())+")";
+            return "«("+ NaxePsiUtil.getScopeParamsString(node.getPsi())+")";
         }
         if(node.getPsi() instanceof NaxePropertyBody){
-            return ":("+NaxePsiUtils.getPropertyAccessString(node.getPsi())+")";
+            return ":("+ NaxePsiUtil.getPropertyAccessString(node.getPsi())+")";
         }
         if(node.getPsi() instanceof NaxeSMetas){
             return "(..)@»";

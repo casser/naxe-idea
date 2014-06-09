@@ -1,26 +1,16 @@
 package org.carracoo.naxe.idea.completion;
 
+
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.PsiElementPattern;
-import com.intellij.patterns.StandardPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.tree.IElementType;
 import com.intellij.util.ProcessingContext;
-import gnu.trove.THashSet;
 import org.carracoo.naxe.idea.lang.NaxeFileImpl;
-import org.carracoo.naxe.idea.lang.NaxeLanguage;
-import org.carracoo.naxe.idea.lang.NaxeToken;
 import org.carracoo.naxe.idea.lang.psi.*;
-import org.carracoo.naxe.idea.utils.NaxePsiUtils;
+import org.carracoo.naxe.idea.utils.NaxePsiUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.beans.Statement;
-import java.util.Set;
 
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
@@ -34,6 +24,9 @@ public class NaxeKeywordCompletionContributor extends CompletionContributor {
                 .withSuperParent(1, PsiErrorElement.class)
                 .withSuperParent(2, NaxeFileImpl.class);
 
+        final PsiElementPattern.Capture<PsiElement> inImportRoot = psiElement()
+                .withSuperParent(1, NaxeIdentifier.class)
+                .withSuperParent(2, NaxeQualifier.class);
         final PsiElementPattern.Capture<PsiElement> inClass      = psiElement()
                 .withSuperParent(1, PsiErrorElement.class)
                 .withSuperParent(2, NaxeClassBody.class);
@@ -49,11 +42,20 @@ public class NaxeKeywordCompletionContributor extends CompletionContributor {
         extend(CompletionType.BASIC,inFile,new CompletionProvider<CompletionParameters>() {
             @Override
             protected void addCompletions(@NotNull CompletionParameters parameters,ProcessingContext context, @NotNull CompletionResultSet result) {
-            result.addElement(LookupElementBuilder.create("package"));
-            result.addElement(LookupElementBuilder.create("class"));
-            result.addElement(LookupElementBuilder.create("import"));
+                result.addElement(LookupElementBuilder.create("package"));
+                result.addElement(LookupElementBuilder.create("class"));
+                result.addElement(LookupElementBuilder.create("import"));
             }
         });
+        extend(CompletionType.BASIC,inImportRoot,new CompletionProvider<CompletionParameters>() {
+            @Override
+            protected void addCompletions(@NotNull CompletionParameters parameters,ProcessingContext context, @NotNull CompletionResultSet result) {
+               for(String identifier: NaxePsiUtil.getFiles(parameters.getOriginalPosition().getProject(), null)){
+                   result.addElement(LookupElementBuilder.create(identifier));
+               }
+            }
+        });
+
         extend(CompletionType.BASIC,inClass,new CompletionProvider<CompletionParameters>() {
             @Override
             protected void addCompletions(@NotNull CompletionParameters parameters,ProcessingContext context, @NotNull CompletionResultSet result) {
@@ -83,7 +85,7 @@ public class NaxeKeywordCompletionContributor extends CompletionContributor {
     @Override
     public void fillCompletionVariants(CompletionParameters parameters, CompletionResultSet result) {
         super.fillCompletionVariants(parameters, result);
-        System.out.println(NaxePsiUtils.getStringPathToParentOfType(parameters.getPosition(),NaxeFileImpl.class));
+        System.out.println(NaxePsiUtil.getStringPathToParentOfType(parameters.getPosition(), NaxeFileImpl.class));
     }
 
 }

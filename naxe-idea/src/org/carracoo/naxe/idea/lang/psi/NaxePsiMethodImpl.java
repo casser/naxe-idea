@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.util.PlatformIcons;
+import org.carracoo.naxe.idea.lang.NaxeFileImpl;
 import org.carracoo.naxe.idea.utils.NaxeIcons;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +16,10 @@ import javax.swing.*;
 public abstract class NaxePsiMethodImpl extends NaxeExpImpl implements NaxePsiMethod {
     public NaxePsiMethodImpl(ASTNode node) {
         super(node);
+    }
+    @Override
+    public String getQualifiedName() {
+        return "function."+getComponentName().getText();
     }
 
 

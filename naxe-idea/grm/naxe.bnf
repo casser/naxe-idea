@@ -163,15 +163,11 @@ naxe                ::= file_item*
 
 identifier          ::= WORD
 ref                 ::= identifier;
-qualifier           ::= ref qualified* {elementType=ref}
-left
-qualified           ::= '.' ref {elementType=ref}
+qualifier           ::= identifier ('.' identifier)*
+
 component_name      ::= identifier;
 component_type      ::= 'any' | 'void' | component_name type_params?;
 type_params         ::= '[' component_type* ']'
-
-
-
 
 regexp_lit          ::= REGEXP
 string_lit          ::= QSTRING|SSTRING
@@ -279,8 +275,12 @@ une_dec_exp                ::= exp '--'
 uns_opt_exp                ::= id_exp '!'
 
 
-arg_exp                    ::= 'arg' component_name  ':' component_type {pin=2}
-var_exp                    ::= component_name  ':' component_type {pin=3}
+arg_exp                    ::= 'arg'  var_item (',' var_item)* {pin=2};
+var_exp                    ::= 'var'? var_item (',' var_item)* {pin=2};
+
+var_item                   ::= component_name (',' component_name)* ':' component_type var_init? {pin=4};
+var_init                   ::= '=' exp;
+
 closure_exp                ::= '?' method_body ':' component_type {pin=2};
 
 
@@ -327,7 +327,7 @@ lit_exp                    ::=
     string_lit              |
     object_exp              |
     array_exp               ;
-paren_exp                  ::= paren {pin=1}
+paren_exp                  ::= paren (':' component_type)? {pin=1}
 array_exp                  ::= '[' exp? (',' exp)* ']' {pin=1};
 object_exp                 ::= '{' object_pair? (',' object_pair)* '}' {pin=1};
 object_pair                ::= (identifier|string_lit) ':' exp
@@ -335,7 +335,7 @@ object_pair                ::= (identifier|string_lit) ':' exp
 private file_item          ::= s_metas? (import_exp | class_exp | rename_exp| property_exp| method_exp | empty_exp) e_metas? {recoverWhile=file_rec};
 private file_rec           ::= !(';'|'package'|'class'|'import'|'function'|'variable'|'rename'|s_meta);
 
-import_exp                 ::= 'import' (component_name ':')? string_lit  {pin=2};
+import_exp                 ::= 'import' (component_name ':')? (qualifier|string_lit)  {pin=2};
 rename_exp                 ::= 'rename' (component_name ':')? component_type {pin=2};
 
 class_exp                  ::= 'class' component_name type_params? class_body? {
@@ -349,12 +349,12 @@ private class_rec          ::= !('('|')'|';'|'variable'|'function'|'inherits'|'o
 
 inherits_exp               ::= 'inherits' component_type* {pin=2};
 
-property_exp               ::= 'variable' component_name  property_body? ':' component_type property_init? {
+property_exp               ::= 'variable' component_name  property_body? ':' component_type var_init? {
     pin                    = 5
     implements             = "org.carracoo.naxe.idea.lang.psi.NaxePsiProperty"
     mixin                  = "org.carracoo.naxe.idea.lang.psi.NaxePsiPropertyImpl"
 }
-property_init              ::= '=' exp;
+
 property_body              ::= '(' property_item* ')' {pin=1}
 private property_item      ::= (getter_exp | setter_exp | empty_exp) {recoverWhile = property_rec};
 private property_rec       ::= !('('|')'|';'|'setter'|'getter');

@@ -46,5 +46,7 @@
       <lang.braceMatcher language="NAXE" implementationClass="org.carracoo.naxe.idea.structure.NaxeBraceMatcher"/>
       <lang.foldingBuilder language="NAXE" implementationClass="org.carracoo.naxe.idea.structure.NaxeFoldingBuilder"/>
       <completion.contributor language="NAXE" implementationClass="org.carracoo.naxe.idea.completion.NaxeKeywordCompletionContributor"/>
+      <fileBasedIndex implementation="org.carracoo.naxe.idea.index.NaxeFileNameIndex"/>
+
   </extensions>
 </idea-plugin>
